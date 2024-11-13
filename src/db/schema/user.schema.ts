@@ -1,3 +1,8 @@
+/*
+ * @description:
+ * @param:
+ * @return:
+ */
 import { SchemaFactory } from '@nestjs/mongoose';
 import { User } from 'src/interfaces/user.interface';
 

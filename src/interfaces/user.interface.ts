@@ -1,9 +1,35 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, raw, Schema } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { Document } from 'mongoose';
+
+export type UserDocument = User & Document;
+
+interface IName {
+  firstName: string;
+  lastName: string;
+  fullName: string;
+}
 
 @Schema()
-export class User extends Document {
-  @Prop()
+export class User {
+  @Prop(
+    raw({
+      firstName: { type: String },
+      lastName: { type: String },
+      fullName: { type: String },
+    }),
+  )
+  @ApiProperty({
+    description: '使用者姓名',
+    example: {
+      firstName: 'John',
+      lastName: 'Doe',
+      fullName: 'John Doe',
+    },
+  })
+  name: IName;
+
+  @Prop({ required: true })
   @ApiProperty({
     description: '使用者手機',
     example: '0912345678',
@@ -13,7 +39,7 @@ export class User extends Document {
   })
   readonly phone: string;
 
-  @Prop()
+  @Prop({ required: true, maxlength: 20 })
   @ApiProperty({
     description: '使用者密碼',
     example: '123456',
