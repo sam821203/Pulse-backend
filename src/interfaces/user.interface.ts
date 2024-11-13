@@ -39,11 +39,14 @@ export class User {
   })
   readonly phone: string;
 
-  @Prop({ required: true, maxlength: 20 })
+  @Prop({ required: true, maxlength: 50 })
   @ApiProperty({
     description: '使用者密碼',
     example: '123456',
     required: true,
   })
   readonly password: string;
+
+  @Prop()
+  readonly salt?: string;
 }

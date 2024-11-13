@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { DbModule } from './db/db.module';
 import { UserModule } from './modules/user/user.module';
 // import { MongooseModule } from '@nestjs/mongoose';
+import { Log4jsModule } from '@nestx-log4js/core';
 
 // const MONGO = {
 //   phone: '<Example>',
@@ -22,6 +23,7 @@ import { UserModule } from './modules/user/user.module';
     // ScraperModule,
     // MarketStatsModule,
     // MongooseModule.forRoot(MONGO.getUrl()),
+    Log4jsModule.forRoot(),
     DbModule,
     UserModule,
   ],
