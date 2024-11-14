@@ -1,0 +1,52 @@
+import { Injectable } from '@nestjs/common';
+import { IResponse } from 'src/interfaces/response.interface';
+import { User } from 'src/interfaces/user.interface';
+import { UserService } from 'src/modules/user/user.service';
+import { encript } from 'src/utils/encription';
+
+@Injectable()
+export class AuthService {
+  private response: IResponse;
+  constructor(private readonly userService: UserService) {}
+
+  private async validateUser(user: User) {
+    const phone: string = user.phone;
+    const password: string = user.password;
+    return await this.userService
+      .findOneByPhone(phone)
+      .then((res) => {
+        if (res.length === 0) {
+          this.response = {
+            code: 3,
+            msg: '使用者尚未註冊',
+          };
+          throw this.response;
+        }
+        return res[0];
+      })
+      .then((dbUser: User) => {
+        const pass = encript(password, dbUser.salt);
+        // 加密密碼，如果等於使用者保存在數據庫的密碼，則登錄成功
+        if (pass === dbUser.password) {
+          this.response = {
+            code: 0,
+            msg: '登入成功',
+          };
+          return this.response;
+        } else {
+          this.response = {
+            code: 2,
+            msg: '登入失敗，密碼錯誤',
+          };
+          return this.response;
+        }
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
+
+  public async login(user: User) {
+    return await this.validateUser(user);
+  }
+}

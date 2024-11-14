@@ -13,14 +13,9 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  /**
-   * @description:
-   * @param {User}: User object containing name, phone and password
-   * @return:
-   */
   public async register(user: User) {
     return this.findOneByPhone(user.phone)
-      .then((res) => {
+      .then((res: []) => {
         if (res.length !== 0) {
           this.response = {
             code: 1,
@@ -52,7 +47,7 @@ export class UserService {
       });
   }
 
-  private async findOneByPhone(phone: string) {
+  async findOneByPhone(phone: string) {
     return await this.userModel.find({ phone });
   }
 }

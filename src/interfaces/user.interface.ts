@@ -49,4 +49,7 @@ export class User {
 
   @Prop()
   readonly salt?: string;
+
+  @Prop()
+  readonly _id: string;
 }

@@ -19,10 +19,10 @@ import { AuthGuard } from 'src/guard/auth.guard';
       useClass: AuthGuard,
     },
   ],
+  exports: [UserService],
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    console.log('UserModule has been configured');
     consumer.apply(HashPasswordMiddleware).forRoutes('user/register');
   }
 }
