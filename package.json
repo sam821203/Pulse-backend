@@ -32,6 +32,7 @@
     "@nestx-log4js/core": "^1.5.1",
     "cheerio": "^1.0.0",
     "iconv-lite": "^0.6.3",
+    "ioredis": "^5.4.1",
     "log4js": "^6.9.1",
     "luxon": "^3.5.0",
     "mongoose": "^8.8.1",

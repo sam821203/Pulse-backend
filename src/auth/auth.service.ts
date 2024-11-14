@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { IResponse } from 'src/interfaces/response.interface';
 import { User } from 'src/interfaces/user.interface';
 import { UserService } from 'src/modules/user/user.service';
@@ -7,7 +8,10 @@ import { encript } from 'src/utils/encription';
 @Injectable()
 export class AuthService {
   private response: IResponse;
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   private async validateUser(user: User) {
     const phone: string = user.phone;
@@ -30,7 +34,7 @@ export class AuthService {
         if (pass === dbUser.password) {
           this.response = {
             code: 0,
-            msg: '登入成功',
+            msg: { userId: dbUser._id },
           };
           return this.response;
         } else {
@@ -46,7 +50,28 @@ export class AuthService {
       });
   }
 
+  async createToken(user: User) {
+    return this.jwtService.sign(user);
+  }
+
   public async login(user: User) {
-    return await this.validateUser(user);
+    return await this.validateUser(user)
+      .then(async (res) => {
+        if (res.code !== 0) {
+          this.response = res;
+          throw this.response;
+        }
+        this.response = {
+          code: 0,
+          msg: {
+            userId: res.msg.userId,
+            token: await this.createToken(user),
+          },
+        };
+        return this.response;
+      })
+      .catch((err) => {
+        return err;
+      });
   }
 }

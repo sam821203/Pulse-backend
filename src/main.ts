@@ -10,11 +10,19 @@ const logger = new Logger('main.ts');
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // 配置 swagger
   const config = new DocumentBuilder()
     .setTitle('Pulse 脈動分析平台')
     .setDescription('Pulse 平台API文件')
     .setVersion('1.0')
-    // .addTag('Pulse')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'jwt',
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger-ui', app, documentFactory);
