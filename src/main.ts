@@ -28,6 +28,9 @@ async function bootstrap() {
   SwaggerModule.setup('swagger-ui', app, documentFactory());
 
   app.useLogger(app.get(Log4jsLogger));
+
+  // 允許跨域訪問
+  app.enableCors();
   await app.listen(process.env.PORT ?? listenPort);
 }
 
