@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IResponse } from 'src/interfaces/response.interface';
 import { User } from 'src/interfaces/user.interface';
 import { UserService } from 'src/modules/user/user.service';
 import { encript } from 'src/utils/encription';
+
+const logger = new Logger('auth.service');
 
 @Injectable()
 export class AuthService {
@@ -52,6 +54,22 @@ export class AuthService {
 
   async createToken(user: User) {
     return this.jwtService.sign(user);
+  }
+
+  // 忘記密碼 / 主動修改密碼
+  public async alter(user: User) {
+    return this.userService
+      .findOneByPhone(user.phone)
+      .then(async () => {
+        return await this.userService.findOneAndUpdate(user.phone, user);
+      })
+      .then(() => {
+        logger.log(`使用者${user.phone}修改密碼成功!`);
+        return (this.response = {
+          code: 0,
+          msg: '修改密碼成功',
+        });
+      });
   }
 
   public async login(user: User) {

@@ -50,4 +50,10 @@ export class UserService {
   async findOneByPhone(phone: string) {
     return await this.userModel.find({ phone });
   }
+
+  async findOneAndUpdate(phone: string, userData: Partial<User>) {
+    return await this.userModel.findOneAndUpdate({ phone }, userData, {
+      new: true,
+    });
+  }
 }

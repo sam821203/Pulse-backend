@@ -13,4 +13,10 @@ export class AuthController {
   public async userLogin(@Body() userDto: User) {
     return await this.authService.login(userDto);
   }
+
+  @Post('alter')
+  @ApiOperation({ summary: '使用者修改密碼' })
+  public async alterUser(@Body() userDto: User) {
+    return await this.authService.alter(userDto);
+  }
 }
