@@ -1,33 +1,13 @@
-import { Prop, raw, Schema } from '@nestjs/mongoose';
+import { Prop, Schema } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type UserDocument = User & Document;
 
-interface IName {
-  firstName: string;
-  lastName: string;
-  fullName: string;
-}
-
 @Schema()
 export class User {
-  @Prop(
-    raw({
-      firstName: { type: String },
-      lastName: { type: String },
-      fullName: { type: String },
-    }),
-  )
-  @ApiProperty({
-    description: '使用者姓名',
-    example: {
-      firstName: 'John',
-      lastName: 'Doe',
-      fullName: 'John Doe',
-    },
-  })
-  name: IName;
+  @Prop({ type: Types.ObjectId, default: () => new Types.ObjectId() })
+  _id: Types.ObjectId;
 
   @Prop({ required: true })
   @ApiProperty({
@@ -50,6 +30,6 @@ export class User {
   @Prop()
   readonly salt?: string;
 
-  @Prop()
-  readonly _id: string;
+  // @Prop()
+  // readonly _id: string;
 }

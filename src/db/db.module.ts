@@ -1,8 +1,3 @@
-/*
- * @description:
- * @param:
- * @return:
- */
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './schema/user.schema';
