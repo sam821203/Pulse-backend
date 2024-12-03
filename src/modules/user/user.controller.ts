@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 // import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from 'src/interfaces/user.interface';
+import { CreateUserDto } from './dto/create-user.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '../role/role.decorator';
 // import { AuthGuard } from '@nestjs/passport';
@@ -15,8 +15,8 @@ export class UserController {
 
   @Post('register')
   @ApiOperation({ summary: '使用者註冊' })
-  async registerUser(@Body() userDto: User) {
-    return this.userService.register(userDto);
+  async registerUser(@Body() user: CreateUserDto) {
+    return this.userService.register(user);
   }
 
   @Get('hello')

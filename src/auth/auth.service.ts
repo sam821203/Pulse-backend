@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IResponse } from 'src/interfaces/response.interface';
-import { User } from 'src/interfaces/user.interface';
+import { LoginUserDto } from 'src/modules/user/dto/login-user.dto';
 import { UserService } from 'src/modules/user/user.service';
 import { encript } from 'src/utils/encription';
+import { User } from 'src/modules/user/schema/user.schema';
 
 const logger = new Logger('auth.service');
 
@@ -15,7 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private async validateUser(user: User) {
+  private async validateUser(user: { phone: string; password: string }) {
     const phone: string = user.phone;
     const password: string = user.password;
     return await this.userService
@@ -52,7 +53,7 @@ export class AuthService {
       });
   }
 
-  async createToken(user: User) {
+  async createToken(user: LoginUserDto) {
     return this.jwtService.sign(user);
   }
 
@@ -72,7 +73,7 @@ export class AuthService {
       });
   }
 
-  public async login(user: User) {
+  public async login(user: LoginUserDto) {
     return await this.validateUser(user)
       .then(async (res) => {
         if (res.code !== 0) {

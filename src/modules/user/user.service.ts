@@ -2,7 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IResponse } from 'src/interfaces/response.interface';
-import { User, UserDocument } from 'src/interfaces/user.interface';
+import { User, UserDocument } from './schema/user.schema';
+import { CreateUserDto } from './dto/create-user.dto';
 
 const logger = new Logger('user');
 
@@ -13,7 +14,7 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  public async register(user: User) {
+  async register(user: CreateUserDto) {
     return this.findOneByPhone(user.phone)
       .then((res: []) => {
         if (res.length !== 0) {

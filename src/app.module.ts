@@ -6,7 +6,6 @@ import { AppController } from './app.controller';
 import { DbModule } from './db/db.module';
 import { UserModule } from './modules/user/user.module';
 import { ScraperModule } from './modules/scraper/scraper.module';
-import { Log4jsModule } from '@nestx-log4js/core';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -14,7 +13,6 @@ import { AuthModule } from './auth/auth.module';
     // ConfigModule.forRoot(),
     ScraperModule,
     // MarketStatsModule,
-    Log4jsModule.forRoot(),
     DbModule,
     UserModule,
     AuthModule,

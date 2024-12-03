@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './schema/user.schema';
+import { UserSchema } from '../modules/user/schema/user.schema';
 
 const MONGO_MODELS = MongooseModule.forFeature([
   {
@@ -15,6 +15,6 @@ const MONGO_MODELS = MongooseModule.forFeature([
     MongooseModule.forRoot('mongodb://localhost:27017/pulse'),
     MONGO_MODELS,
   ],
-  exports: [MONGO_MODELS],
+  // exports: [MONGO_MODELS],
 })
 export class DbModule {}

@@ -2,13 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
-import { Log4jsLogger } from '@nestx-log4js/core';
+import { ValidationPipe } from '@nestjs/common';
 
 const listenPort = 3000;
 const logger = new Logger('main.ts');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ValidationPipe());
 
   // 配置 swagger
   const config = new DocumentBuilder()
@@ -26,8 +28,6 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger-ui', app, documentFactory());
-
-  app.useLogger(app.get(Log4jsLogger));
 
   // 允許跨域訪問
   app.enableCors();
