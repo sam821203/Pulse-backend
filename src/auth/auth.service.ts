@@ -25,7 +25,7 @@ export class AuthService {
         if (res.length === 0) {
           this.response = {
             code: 3,
-            msg: '使用者尚未註冊',
+            data: '使用者尚未註冊',
           };
           throw this.response;
         }
@@ -37,13 +37,13 @@ export class AuthService {
         if (pass === dbUser.password) {
           this.response = {
             code: 0,
-            msg: { userId: dbUser._id },
+            data: { userId: dbUser._id },
           };
           return this.response;
         } else {
           this.response = {
             code: 2,
-            msg: '登入失敗，密碼錯誤',
+            data: '登入失敗，密碼錯誤',
           };
           return this.response;
         }
@@ -68,29 +68,29 @@ export class AuthService {
         logger.log(`使用者${user.phone}修改密碼成功!`);
         return (this.response = {
           code: 0,
-          msg: '修改密碼成功',
+          data: '修改密碼成功',
         });
       });
   }
 
-  public async login(user: LoginUserDto) {
-    return await this.validateUser(user)
-      .then(async (res) => {
-        if (res.code !== 0) {
-          this.response = res;
-          throw this.response;
-        }
-        this.response = {
-          code: 0,
-          msg: {
-            userId: res.msg.userId,
-            token: await this.createToken(user),
-          },
-        };
-        return this.response;
-      })
-      .catch((err) => {
-        return err;
-      });
+  async login(user: LoginUserDto) {
+    try {
+      const res = await this.validateUser(user);
+      if (res.code !== 0) {
+        this.response = res;
+        throw this.response;
+      }
+      this.response = {
+        code: 0,
+        data: {
+          userId: res.data.userId,
+          token: await this.createToken(user),
+        },
+      };
+      return this.response;
+    } catch (err) {
+      logger.error(`登入失敗: ${err.msg || err.message}`);
+      return err;
+    }
   }
 }

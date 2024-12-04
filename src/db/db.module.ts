@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from '../modules/user/schema/user.schema';
+import { DbService } from './db.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 const MONGO_MODELS = MongooseModule.forFeature([
   {
@@ -12,9 +14,16 @@ const MONGO_MODELS = MongooseModule.forFeature([
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/pulse'),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('database.uri'),
+      }),
+      inject: [ConfigService],
+    }),
     MONGO_MODELS,
   ],
-  // exports: [MONGO_MODELS],
+  exports: [MONGO_MODELS],
+  providers: [DbService],
 })
 export class DbModule {}

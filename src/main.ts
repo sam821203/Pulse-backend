@@ -3,13 +3,16 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
-const listenPort = 3000;
 const logger = new Logger('main.ts');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('port') || 3000;
 
+  // 使用全局驗證管道
   app.useGlobalPipes(new ValidationPipe());
 
   // 配置 swagger
@@ -31,9 +34,10 @@ async function bootstrap() {
 
   // 允許跨域訪問
   app.enableCors();
-  await app.listen(process.env.PORT ?? listenPort);
+
+  // 啟動應用
+  await app.listen(port);
+  logger.log(`Server is running on http://localhost:${port}/swagger-ui`);
 }
 
-bootstrap().then(() => {
-  logger.log(`Server is running on http://localhost:${listenPort}/swagger-ui`);
-});
+bootstrap();
