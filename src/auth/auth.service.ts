@@ -3,47 +3,52 @@ import { JwtService } from '@nestjs/jwt';
 import { IResponse } from 'src/interfaces/response.interface';
 import { LoginUserDto } from 'src/modules/user/dto/login-user.dto';
 import { UserService } from 'src/modules/user/user.service';
-import { encript } from 'src/utils/encription';
 import { User } from 'src/modules/user/schema/user.schema';
+import { CommonUtility } from 'src/utils/common.utility';
+import { EMPTY } from 'rxjs';
 
 const logger = new Logger('auth.service');
 
 @Injectable()
 export class AuthService {
   private response: IResponse;
+  // 儲存無效的 JWT
+  private blacklist: Set<string> = new Set();
+
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
 
-  private async validateUser(user: { phone: string; password: string }) {
-    const phone: string = user.phone;
-    const password: string = user.password;
+  private async validateUser({ phone, password }): Promise<IResponse> {
     return await this.userService
       .findOneByPhone(phone)
       .then((res) => {
         if (res.length === 0) {
           this.response = {
             code: 3,
-            data: '使用者尚未註冊',
+            msg: '使用者尚未註冊',
+            data: EMPTY,
           };
           throw this.response;
         }
         return res[0];
       })
       .then((dbUser: User) => {
-        const pass = encript(password, dbUser.salt);
+        const { hash } = CommonUtility.encryptBySalt(password, dbUser.salt);
         // 加密密碼，如果等於使用者保存在數據庫的密碼，則登錄成功
-        if (pass === dbUser.password) {
+        if (hash === dbUser.password) {
           this.response = {
             code: 0,
+            msg: '驗證成功',
             data: { userId: dbUser._id },
           };
           return this.response;
         } else {
           this.response = {
             code: 2,
-            data: '登入失敗，密碼錯誤',
+            msg: '登入失敗，密碼錯誤',
+            data: EMPTY,
           };
           return this.response;
         }
@@ -59,18 +64,20 @@ export class AuthService {
 
   // 忘記密碼 / 主動修改密碼
   public async alter(user: User) {
-    return this.userService
-      .findOneByPhone(user.phone)
-      .then(async () => {
-        return await this.userService.findOneAndUpdate(user.phone, user);
-      })
-      .then(() => {
-        logger.log(`使用者${user.phone}修改密碼成功!`);
-        return (this.response = {
-          code: 0,
-          data: '修改密碼成功',
-        });
-      });
+    try {
+      await this.userService.findOneByPhone(user.phone);
+      await this.userService.findOneAndUpdate(user.phone, user);
+      logger.log(`使用者${user.phone}修改密碼成功!`);
+      this.response = {
+        code: 0,
+        msg: '修改密碼成功',
+        data: EMPTY,
+      };
+      return this.response;
+    } catch (error) {
+      logger.error(`使用者${user.phone}修改密碼失敗: ${error.message}`);
+      throw error;
+    }
   }
 
   async login(user: LoginUserDto) {
@@ -82,8 +89,9 @@ export class AuthService {
       }
       this.response = {
         code: 0,
+        msg: '登入成功',
         data: {
-          userId: res.data.userId,
+          userId: (res.data as { userId: string }).userId,
           token: await this.createToken(user),
         },
       };
@@ -92,5 +100,15 @@ export class AuthService {
       logger.error(`登入失敗: ${err.msg || err.message}`);
       return err;
     }
+  }
+
+  async logout(token: string) {
+    // 將 JWT 添加到黑名單
+    this.blacklist.add(token);
+    return {
+      code: 0,
+      msg: '登出成功',
+      data: EMPTY,
+    };
   }
 }

@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
+import { APP_PIPE } from '@nestjs/core';
 // import { MarketStatsModule } from './market-stats/market-stats.module';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
@@ -24,6 +25,13 @@ import configurationFactory from './config/configuration.factory';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      // 注入全域 Pipe
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+  ],
 })
 export class AppModule {}
