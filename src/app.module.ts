@@ -9,6 +9,7 @@ import { ScraperModule } from './modules/scraper/scraper.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import configurationFactory from './config/configuration.factory';
+import jwtConfigFactory from './config/jwt.config';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import configurationFactory from './config/configuration.factory';
     AuthModule,
     ConfigModule.forRoot({
       envFilePath: ['development.env', 'production.env'],
-      load: [configurationFactory],
+      load: [configurationFactory, jwtConfigFactory],
       isGlobal: true,
       expandVariables: true,
     }),

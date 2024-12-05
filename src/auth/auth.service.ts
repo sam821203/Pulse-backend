@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IResponse } from 'src/interfaces/response.interface';
-import { LoginUserDto } from 'src/modules/user/dto/login-user.dto';
 import { UserService } from 'src/modules/user/user.service';
 import { User } from 'src/modules/user/schema/user.schema';
 import { CommonUtility } from 'src/utils/common.utility';
 import { EMPTY } from 'rxjs';
+import { LoginUserDto } from 'src/modules/user/dto/login-user.dto';
 
 const logger = new Logger('auth.service');
 
@@ -20,45 +20,51 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  private async validateUser({ phone, password }): Promise<IResponse> {
-    return await this.userService
-      .findOneByPhone(phone)
-      .then((res) => {
-        if (res.length === 0) {
-          this.response = {
-            code: 3,
-            msg: '使用者尚未註冊',
-            data: EMPTY,
-          };
-          throw this.response;
-        }
-        return res[0];
-      })
-      .then((dbUser: User) => {
-        const { hash } = CommonUtility.encryptBySalt(password, dbUser.salt);
-        // 加密密碼，如果等於使用者保存在數據庫的密碼，則登錄成功
-        if (hash === dbUser.password) {
-          this.response = {
-            code: 0,
-            msg: '驗證成功',
-            data: { userId: dbUser._id },
-          };
-          return this.response;
-        } else {
-          this.response = {
-            code: 2,
-            msg: '登入失敗，密碼錯誤',
-            data: EMPTY,
-          };
-          return this.response;
-        }
-      })
-      .catch((err) => {
-        return err;
-      });
+  public async validateUser({
+    phone,
+    password,
+  }: {
+    phone: string;
+    password: string;
+  }): Promise<IResponse> {
+    try {
+      const res = await this.userService.findOneByPhone(phone);
+      if (res.length === 0) {
+        this.response = {
+          code: 3,
+          msg: '使用者尚未註冊',
+          data: EMPTY,
+        };
+        throw this.response;
+      }
+
+      const dbUser = res[0];
+      const { hash } = CommonUtility.encryptBySalt(password, dbUser.salt);
+      // 加密密碼，如果等於使用者保存在數據庫的密碼，則登錄成功
+      if (hash === dbUser.password) {
+        this.response = {
+          code: 0,
+          msg: '驗證成功',
+          data: { userId: dbUser._id },
+        };
+      } else {
+        this.response = {
+          code: 2,
+          msg: '登入失敗，密碼錯誤',
+          data: EMPTY,
+        };
+      }
+      return this.response;
+    } catch (err) {
+      logger.error(`驗證失敗: ${err.msg || err.message}`);
+      return err;
+    }
   }
 
-  async createToken(user: LoginUserDto) {
+  // create token with jwt
+  async generateJwt(user: LoginUserDto) {
+    // const { userId, phone } = user;
+    // const payload = { userId, phone };
     return this.jwtService.sign(user);
   }
 
@@ -92,7 +98,7 @@ export class AuthService {
         msg: '登入成功',
         data: {
           userId: (res.data as { userId: string }).userId,
-          token: await this.createToken(user),
+          token: await this.generateJwt(user),
         },
       };
       return this.response;
