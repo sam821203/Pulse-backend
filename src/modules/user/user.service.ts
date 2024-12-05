@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { IResponse } from 'src/interfaces/response.interface';
 import { USER_MODEL_TOKEN, User, UserDocument } from './schema/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,12 +26,12 @@ export class UserService {
   ) {}
 
   register(user: CreateUserDto): Observable<IResponse> {
-    return from(this.findOneByPhone(user.phone)).pipe(
+    return from(this.findUserByName(user.name)).pipe(
       mergeMap((res: User[]) => {
         if (res.length !== 0) {
           this.response = {
             code: 1,
-            msg: '當前手機號碼已註冊',
+            msg: '當前使用者名稱已註冊',
             data: EMPTY,
           };
           return throwError(() => new Error(this.response.msg as string));
@@ -60,18 +60,26 @@ export class UserService {
         );
       }),
       catchError((error) => {
-        logger.log(`${user.phone} ${error.msg}`);
+        logger.log(`${user.name} ${error.msg}`);
         return of(this.response);
       }),
     );
   }
 
-  async findOneByPhone(phone: string) {
-    return await this.userModel.find({ phone });
+  async findUserByName(name: string) {
+    return await this.userModel.find({ name });
   }
 
-  async findOneAndUpdate(phone: string, userData: Partial<User>) {
-    return await this.userModel.findOneAndUpdate({ phone }, userData, {
+  // async findUserById(_id: string) {
+  //   return await this.userModel.find({ _id });
+  // }
+
+  async findUser(filter: FilterQuery<UserDocument>) {
+    return this.userModel.findOne(filter).exec();
+  }
+
+  async findOneAndUpdate(name: string, userData: Partial<User>) {
+    return await this.userModel.findOneAndUpdate({ name }, userData, {
       new: true,
     });
   }

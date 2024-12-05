@@ -21,14 +21,14 @@ export class AuthService {
   ) {}
 
   public async validateUser({
-    phone,
+    name,
     password,
   }: {
-    phone: string;
+    name: string;
     password: string;
   }): Promise<IResponse> {
     try {
-      const res = await this.userService.findOneByPhone(phone);
+      const res = await this.userService.findUserByName(name);
       if (res.length === 0) {
         this.response = {
           code: 3,
@@ -63,17 +63,17 @@ export class AuthService {
 
   // create token with jwt
   async generateJwt(user: LoginUserDto) {
-    // const { userId, phone } = user;
-    // const payload = { userId, phone };
+    // const { userId, name } = user;
+    // const payload = { userId, name };
     return this.jwtService.sign(user);
   }
 
   // 忘記密碼 / 主動修改密碼
   public async alter(user: User) {
     try {
-      await this.userService.findOneByPhone(user.phone);
-      await this.userService.findOneAndUpdate(user.phone, user);
-      logger.log(`使用者${user.phone}修改密碼成功!`);
+      await this.userService.findUserByName(user.name);
+      await this.userService.findOneAndUpdate(user.name, user);
+      logger.log(`使用者${user.name}修改密碼成功!`);
       this.response = {
         code: 0,
         msg: '修改密碼成功',
@@ -81,7 +81,7 @@ export class AuthService {
       };
       return this.response;
     } catch (error) {
-      logger.error(`使用者${user.phone}修改密碼失敗: ${error.message}`);
+      logger.error(`使用者${user.name}修改密碼失敗: ${error.message}`);
       throw error;
     }
   }
