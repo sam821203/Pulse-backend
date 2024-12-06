@@ -20,7 +20,7 @@ export class CreateUserDto {
   @MinLength(8)
   @MaxLength(50)
   readonly password: string;
-
   readonly salt?: string;
   readonly _id?: string;
+  isAdmin: boolean;
 }

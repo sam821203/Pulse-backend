@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import {
@@ -9,11 +17,14 @@ import {
 } from '@nestjs/swagger';
 import { Role } from '../role/role.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from './entities/user.entity';
+import { Action } from 'src/auth/enums/actions.enum';
 
 @Controller('user')
 @ApiTags('使用者')
 @ApiBearerAuth('jwt')
 export class UserController {
+  [x: string]: any;
   constructor(private userService: UserService) {}
 
   @Post('register')
@@ -39,6 +50,19 @@ export class UserController {
     } catch (error) {
       return { message: error.message };
     }
+  }
+
+  @Put()
+  async updateProfile(@CurrentUser() user: User) {
+    const ability = this.caslAbilityFactory.createForUser(user);
+
+    if (ability.can(Action.Update, 'all')) {
+    }
+
+    return {
+      code: 0,
+      msg: 'update profile success',
+    };
   }
 
   @Get('hello')

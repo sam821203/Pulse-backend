@@ -8,6 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { CaslAbilityModule } from './casl/casl-ability.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         };
       },
     }),
+    CaslAbilityModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy],
