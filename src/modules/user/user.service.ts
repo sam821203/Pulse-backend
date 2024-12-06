@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { IResponse } from 'src/interfaces/response.interface';
 import { USER_MODEL_TOKEN, User, UserDocument } from './schema/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -70,9 +70,14 @@ export class UserService {
     return await this.userModel.find({ name });
   }
 
-  // async findUserById(_id: string) {
-  //   return await this.userModel.find({ _id });
-  // }
+  async findUserById(userId: string) {
+    const user = await this.userModel.find({ _id: new Types.ObjectId(userId) });
+    if (!user || user.length === 0) {
+      logger.log('找不到使用者');
+      return null;
+    }
+    return user;
+  }
 
   async findUser(filter: FilterQuery<UserDocument>) {
     return this.userModel.findOne(filter).exec();
