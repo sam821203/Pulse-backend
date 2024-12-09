@@ -17,8 +17,9 @@ import {
 } from '@nestjs/swagger';
 import { Role } from '../role/role.decorator';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from './entities/user.entity';
+// import { User } from './entities/user.entity';
 import { Action } from 'src/auth/enums/actions.enum';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @Controller('user')
 @ApiTags('使用者')
@@ -53,9 +54,10 @@ export class UserController {
   }
 
   @Put()
-  async updateProfile(@CurrentUser() user: User) {
+  async updateProfile(@CurrentUser() user: any) {
     const ability = this.caslAbilityFactory.createForUser(user);
 
+    // 檢查使用者是否有更新權限，如果有，則執行更新邏輯。
     if (ability.can(Action.Update, 'all')) {
     }
 

@@ -8,7 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { CHECK_ABILITY } from '../casl/casl-ability.decorator';
 import { CaslAbilityFactory } from '../casl/casl-ability.factory';
 import { CreateUserDto } from 'src/modules/user/dto';
-import { Action, Subjects } from 'src/common/constants/permission-action';
+import { Action } from '../enums/actions.enum';
 
 @Injectable()
 export class AbilitiesGuard implements CanActivate {
@@ -29,8 +29,8 @@ export class AbilitiesGuard implements CanActivate {
 
     const ability = this.abilityFactory.createForUser(user);
 
-    for (const [action] of abilities) {
-      if (!ability.can(action, Article)) {
+    for (const [action, subject] of abilities) {
+      if (!ability.can(action, subject)) {
         throw new ForbiddenException('Forbidden');
       }
     }

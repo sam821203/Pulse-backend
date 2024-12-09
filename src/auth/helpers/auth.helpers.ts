@@ -1,7 +1,7 @@
-import { User } from '../../modules/user/entities/user.entity';
+// import { User } from '../../modules/user/entities/user.entity';
 import { ClientRole } from '../enums/roles.enum';
 
-export function getClientPermissions(user: Partial<User>): Set<string> {
+export function getClientPermissions(user: Partial<any>): Set<string> {
   // Extract all permissions from the user's roles
   const rolePermissions = new Set<string>(
     (user.roles ?? []).flatMap((role) =>
@@ -18,6 +18,6 @@ export function getClientPermissions(user: Partial<User>): Set<string> {
   return new Set<string>([...rolePermissions, ...directPermissions]);
 }
 
-export const userHasAnyRole = (user: User, roles: ClientRole[]) => {
+export const userHasAnyRole = (user: any, roles: ClientRole[]) => {
   return user.roles?.some((role) => roles.includes(role.name));
 };
