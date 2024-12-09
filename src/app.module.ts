@@ -13,6 +13,7 @@ import configurationFactory from './config/configuration.factory';
 import jwtConfigFactory from './config/jwt.config';
 import { AbilitiesGuard } from 'src/auth/guards/permissions.guard';
 import { CaslAbilityModule } from './auth/casl/casl-ability.module';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -40,6 +41,10 @@ import { CaslAbilityModule } from './auth/casl/casl-ability.module';
     {
       provide: APP_GUARD,
       useClass: AbilitiesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

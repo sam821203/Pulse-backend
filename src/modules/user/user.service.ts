@@ -14,6 +14,7 @@ import {
   throwError,
   EMPTY,
 } from 'rxjs';
+import { ClientRole } from 'src/auth/enums/roles.enum';
 
 const logger = new Logger('user');
 
@@ -39,7 +40,10 @@ export class UserService {
         return of(null);
       }),
       mergeMap(() => {
-        const createUser = new this.userModel(user);
+        const createUser = new this.userModel({
+          ...user,
+          roles: [ClientRole.User],
+        });
         return from(createUser.save()).pipe(
           map(() => {
             this.response = {

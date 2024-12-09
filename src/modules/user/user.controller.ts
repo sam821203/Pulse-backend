@@ -20,6 +20,7 @@ import { AuthGuard } from '@nestjs/passport';
 // import { User } from './entities/user.entity';
 import { Action } from 'src/auth/enums/actions.enum';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { ClientRole } from 'src/auth/enums/roles.enum';
 
 @Controller('user')
 @ApiTags('使用者')
@@ -65,6 +66,13 @@ export class UserController {
       code: 0,
       msg: 'update profile success',
     };
+  }
+
+  @Get('findAll')
+  @ApiOperation({ summary: '測試 Role' })
+  @Role(ClientRole.Admin)
+  findAll() {
+    return 'This action is protected by RolesGuard';
   }
 
   @Get('hello')

@@ -22,5 +22,4 @@ export class CreateUserDto {
   readonly password: string;
   readonly salt?: string;
   readonly _id?: string;
-  isAdmin: boolean;
 }

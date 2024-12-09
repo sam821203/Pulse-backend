@@ -25,7 +25,6 @@ export class CaslAbilityFactory {
     const { can, cannot, build } = new AbilityBuilder(
       createMongoAbility<PossibleAbilities, Conditions>,
     );
-    console.log('cannot: ', cannot);
     // 使用者可以更新和閱讀自己的文章
     // can([Action.Read, Action.Update], User, { id: user.id });
     can(Action.Read, 'all', { authorId: user.id });
