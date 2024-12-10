@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
 import { IResponse } from 'src/interfaces/response.interface';
-import { USER_MODEL_TOKEN, User, UserDocument } from './schema/user.schema';
+import { USER_MODEL_TOKEN, User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import {
   catchError,

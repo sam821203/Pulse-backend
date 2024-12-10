@@ -2,10 +2,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IResponse } from 'src/interfaces/response.interface';
 import { UserService } from 'src/modules/user/user.service';
-import { User } from 'src/modules/user/schema/user.schema';
+import { User } from 'src/modules/user/schemas/user.schema';
 import { CommonUtility } from 'src/utils/common.utility';
 import { EMPTY } from 'rxjs';
 import { LoginUserDto } from 'src/modules/user/dto/login-user.dto';
+import {
+  LOGOUT_MODEL_TOKEN,
+  LogoutDocument,
+} from '../modules/user/schemas/logout.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 const logger = new Logger('auth.service');
 
@@ -18,6 +24,8 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    @InjectModel(LOGOUT_MODEL_TOKEN)
+    private readonly logoutModel: Model<LogoutDocument>,
   ) {}
 
   public async validateUser({
@@ -107,11 +115,23 @@ export class AuthService {
 
   async logout(token: string) {
     // 將 JWT 添加到黑名單
+    // TODO: 移轉 Redis
     this.blacklist.add(token);
+
+    const logoutRecord = new this.logoutModel({
+      token,
+      logoutTime: new Date(),
+    });
+    await logoutRecord.save();
     return {
       code: 0,
       msg: '登出成功',
       data: EMPTY,
     };
+  }
+
+  // 檢查 JWT 是否在黑名單中
+  isTokenBlacklisted(token: string): boolean {
+    return this.blacklist.has(token);
   }
 }

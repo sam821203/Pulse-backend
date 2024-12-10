@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { LoginUserDto } from 'src/modules/user/dto/login-user.dto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtBlacklistGuard } from '../auth/guards/jwt-blacklist.guard';
 
 @Controller('auth')
 @ApiTags('使用者登入相關')
@@ -14,6 +15,13 @@ export class AuthController {
   @ApiOperation({ summary: '使用者登入' })
   public async userLogin(@Body() user: LoginUserDto) {
     return await this.authService.login(user);
+  }
+
+  @UseGuards(JwtBlacklistGuard)
+  @Post('logout')
+  @ApiOperation({ summary: '使用者登出' })
+  async userLogout(@Body('token') token: string) {
+    return await this.authService.logout(token);
   }
 
   // @Post('alter')

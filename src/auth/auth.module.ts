@@ -9,6 +9,8 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CaslAbilityModule } from './casl/casl-ability.module';
+import { LogoutDefinition } from 'src/modules/user/schemas/logout.schema';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { CaslAbilityModule } from './casl/casl-ability.module';
       },
     }),
     CaslAbilityModule,
+    MongooseModule.forFeature([LogoutDefinition]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy],
