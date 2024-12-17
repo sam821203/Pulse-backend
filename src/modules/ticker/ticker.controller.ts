@@ -1,15 +1,17 @@
 import { Controller, Get, Param } from '@nestjs/common';
-// import { TwseScraperService } from '../../modules/scraper/twse-scraper.service';
 import { TickerService } from '../../modules/ticker/ticker.service';
+import { ApiOperation } from '@nestjs/swagger';
 
-// @Controller('copy-todos')
 @Controller('ticker')
 export class TickerController {
   constructor(private readonly tickerService: TickerService) {}
 
-  // TODO: 更新每日行情數據到資料庫
   @Get(':date')
+  @ApiOperation({ summary: '查詢個股資訊' })
   async getTickers(@Param('date') date: string) {
     return await this.tickerService.updateTickers(date);
   }
+
+  // TODO: GET 從資料庫中取得特定日期的股票資訊 {find: ...}
+  // TODO: find symbol / name 來查個股股票資訊
 }

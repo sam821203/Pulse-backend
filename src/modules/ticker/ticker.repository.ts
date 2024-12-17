@@ -14,7 +14,6 @@ export class TickerRepository {
     private readonly model: Model<TickerDocument>,
   ) {}
 
-  // TODO: 更新每日行情數據，確認 mongodb 語法
   async updateTicker(ticker: Partial<Ticker>) {
     const { date, symbol } = ticker;
     return this.model.updateOne({ date, symbol }, ticker, { upsert: true });

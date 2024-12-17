@@ -81,6 +81,10 @@ export class Ticker {
   // @Prop()
   // dealersNetBuySell: number;
 
+  // 每股股利
+  @Prop()
+  dividendPerShare: number;
+
   // 財報年/季
   @Prop()
   fiscalYearQuarter: string;
@@ -102,11 +106,10 @@ export class Ticker {
   dividendYear: number;
 }
 
-export const TickerSchema = SchemaFactory.createForClass(Ticker);
-// export const TickerSchema = SchemaFactory.createForClass(Ticker).index(
-//   { date: -1, symbol: 1 },
-//   { unique: true },
-// );
+export const TickerSchema = SchemaFactory.createForClass(Ticker).index(
+  { date: -1, symbol: 1 },
+  { unique: true },
+);
 
 export const TICKER_MODEL_TOKEN = Ticker.name;
 

@@ -6,7 +6,6 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { DbModule } from './db/db.module';
 import { UserModule } from './modules/user/user.module';
-// import { ScraperModule } from './modules/scraper/scraper.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import configurationFactory from './config/configuration.factory';
@@ -22,7 +21,6 @@ import { DateTime } from 'luxon';
 
 @Module({
   imports: [
-    // ScraperModule,
     // MarketStatsModule,
     DbModule,
     UserModule,
@@ -58,6 +56,7 @@ import { DateTime } from 'luxon';
 export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly tickerService: TickerService) {}
   async onApplicationBootstrap() {
+    // 初始化過去 31 天的股票資料
     // if (process.env.SCRAPER_INIT === 'true') {
     Logger.log('正在初始化應用程式...', AppModule.name);
     for (

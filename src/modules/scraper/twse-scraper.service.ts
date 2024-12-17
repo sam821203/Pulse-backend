@@ -16,6 +16,7 @@ export class TwseScraperService {
     private httpService: HttpService,
   ) {}
 
+  // API：取得上是公司股票清單
   async fetchListedStocks(options?: { market: 'TSE' | 'OTC' }) {
     const url =
       options?.market === 'OTC'
@@ -48,7 +49,7 @@ export class TwseScraperService {
     return data;
   }
 
-  // 取得上市股票本益比、股價淨值比、殖利率
+  // API：取得上市股票本益比、股價淨值比、殖利率
   async fetchEquitiesValues(date: string) {
     // 將 `date` 轉換成 `yyyyMMdd` 格式
     const formattedDate = DateTime.fromISO(date).toFormat('yyyyMMdd');
@@ -84,7 +85,7 @@ export class TwseScraperService {
         date,
         symbol,
         name,
-        fiscalYearQuarter,
+        fiscalYearQuarter, // 財報年/季
         peRatio: numeral(peRatio).value(), // 本益比
         pbRatio: numeral(pbRatio).value(), // 股價淨值比
         dividendYield: numeral(dividendYield).value(), // 殖利率
@@ -92,9 +93,6 @@ export class TwseScraperService {
       };
       return [...tickers, ticker];
     }, []);
-
-    // 將資料儲存到 MongoDB
-    // await this.twseModel.insertMany(data);
 
     return data;
   }
