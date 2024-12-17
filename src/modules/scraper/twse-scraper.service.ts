@@ -5,10 +5,16 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { DateTime } from 'luxon';
 import * as numeral from 'numeral';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { TWSE_MODEL_TOKEN, TwseDocument } from './schemas/twse.schema';
 
 @Injectable()
 export class TwseScraperService {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    @InjectModel(TWSE_MODEL_TOKEN) private twseModel: Model<TwseDocument>,
+    private httpService: HttpService,
+  ) {}
 
   async fetchListedStocks(options?: { market: 'TSE' | 'OTC' }) {
     const url =
@@ -72,12 +78,13 @@ export class TwseScraperService {
         dividendYear,
         peRatio,
         pbRatio,
-        // fiscalYearQuarter,
+        fiscalYearQuarter,
       ] = row;
       const ticker = {
         date,
         symbol,
         name,
+        fiscalYearQuarter,
         peRatio: numeral(peRatio).value(), // 本益比
         pbRatio: numeral(pbRatio).value(), // 股價淨值比
         dividendYield: numeral(dividendYield).value(), // 殖利率
@@ -86,14 +93,17 @@ export class TwseScraperService {
       return [...tickers, ticker];
     }, []);
 
+    // 將資料儲存到 MongoDB
+    // await this.twseModel.insertMany(data);
+
     return data;
   }
 
-  async onApplicationBootstrap() {
-    const tse = await this.fetchListedStocks({ market: 'TSE' });
-    // console.log(tse); // 顯示上市公司股票清單
+  // async onApplicationBootstrap() {
+  //   const tse = await this.fetchListedStocks({ market: 'TSE' });
+  //   // console.log(tse); // 顯示上市公司股票清單
 
-    const otc = await this.fetchListedStocks({ market: 'OTC' });
-    // console.log(otc); // 顯示上櫃公司股票清單
-  }
+  //   const otc = await this.fetchListedStocks({ market: 'OTC' });
+  //   // console.log(otc); // 顯示上櫃公司股票清單
+  // }
 }
