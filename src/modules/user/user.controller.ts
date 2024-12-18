@@ -35,7 +35,8 @@ export class UserController {
     return this.userService.register(user);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  // TODO: 確認權限
+  // @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   @ApiParam({
     name: 'id',

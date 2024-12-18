@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { TickerType } from './enums/index';
 import { TickerRepository } from './ticker.repository';
 import { TwseScraperService } from '../scraper/twse-scraper.service';
@@ -23,8 +23,6 @@ export class TickerService {
       this.updateTwseEquitiesValues(date),
       this.updateTpexEquitiesValues(date),
     ]).then(() => delay(2000));
-
-    // Logger.log(`${date} 已完成`, TickerService.name);
   }
 
   @Cron('0 0 17 * * *')
@@ -35,7 +33,7 @@ export class TickerService {
         date: ticker.date,
         type: TickerType.Index,
         symbol: ticker.symbol,
-        name: ticker.name,
+        name: ticker.name.trim(),
         fiscalYearQuarter: ticker.fiscalYearQuarter,
         peRatio: ticker.peRatio,
         pbRatio: ticker.pbRatio,
@@ -61,7 +59,7 @@ export class TickerService {
         date: ticker.date,
         type: TickerType.Index,
         symbol: ticker.symbol,
-        name: ticker.name,
+        name: ticker.name.trim(),
         dividendPerShare: ticker.dividendPerShare,
         peRatio: ticker.peRatio,
         pbRatio: ticker.pbRatio,
@@ -76,6 +74,18 @@ export class TickerService {
       Logger.log(`${date} 上櫃本益比: 已更新`, TickerService.name);
     } else {
       Logger.warn(`${date} 上櫃本益比: 尚無資料或非交易日`, TickerService.name);
+    }
+  }
+
+  async findStockInfo(symbol?: string, name?: string) {
+    if (!symbol && !name) {
+      return new BadRequestException('須至少提供股票代號或股票名稱!');
+    } else {
+      if (symbol) {
+        return await this.tickerRepository.findStockBySymbol(symbol);
+      } else if (name) {
+        return await this.tickerRepository.findStockByName(name);
+      }
     }
   }
 }

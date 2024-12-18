@@ -59,13 +59,13 @@ export class AppModule implements OnApplicationBootstrap {
     // 初始化過去 31 天的股票資料
     // if (process.env.SCRAPER_INIT === 'true') {
     Logger.log('正在初始化應用程式...', AppModule.name);
-    for (
-      let dt = DateTime.local(), days = 0;
-      days < 31;
-      dt = dt.minus({ day: 1 }), days++
-    ) {
-      await this.tickerService.updateTickers(dt.toISODate());
-    }
+    // for (
+    //   let dt = DateTime.local(), days = 0;
+    //   days < 31;
+    //   dt = dt.minus({ day: 1 }), days++
+    // ) {
+    //   await this.tickerService.updateTickers(dt.toISODate());
+    // }
     Logger.log('應用程式初始化完成', AppModule.name);
     // }
   }

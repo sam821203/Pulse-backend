@@ -18,4 +18,12 @@ export class TickerRepository {
     const { date, symbol } = ticker;
     return this.model.updateOne({ date, symbol }, ticker, { upsert: true });
   }
+
+  async findStockBySymbol(symbol: string) {
+    return this.model.find({ symbol });
+  }
+
+  async findStockByName(name: string) {
+    return this.model.find({ name });
+  }
 }
