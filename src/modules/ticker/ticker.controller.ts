@@ -33,9 +33,16 @@ export class TickerController {
     return await this.tickerService.findStockInfo(symbol, name);
   }
 
-  @Get('marketStocks')
-  @ApiOperation({ summary: '查詢個股產業別' })
-  async getStockMarket() {
-    return await this.tickerService.updateStockMarket();
-  }
+  // @Get()
+  // @ApiOperation({ summary: '查詢個股產業別' })
+  // async findIndustryAndMarket(@Query('symbol') symbol: string) {
+  //   return await this.tickerService.findFirstStock(symbol);
+  // }
+
+  // 查詢該個股 31 天的產業別
+  // @Get('marketStocks')
+  // @ApiOperation({ summary: '查詢個股產業別' })
+  // async getStockMarket() {
+  //   return await this.tickerService.updateStockMarket();
+  // }
 }
