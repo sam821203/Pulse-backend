@@ -22,6 +22,7 @@ export class TickerService {
     await Promise.all([
       this.updateTwseEquitiesValues(date),
       this.updateTpexEquitiesValues(date),
+      this.updateStockMarket(),
     ]).then(() => delay(2000));
   }
 
@@ -86,6 +87,29 @@ export class TickerService {
       } else if (name) {
         return await this.tickerRepository.findStockByName(name);
       }
+    }
+  }
+
+  // 每年 1 月 1 日的午夜（00:00）執行一次
+  @Cron('0 0 0 1 1 *')
+  async updateStockMarket() {
+    try {
+      const [tse, otc] = await Promise.all([
+        this.twseScraperService.fetchListedStocks({ market: 'TSE' }),
+        this.twseScraperService.fetchListedStocks({ market: 'OTC' }),
+      ]);
+
+      const tickers = [...tse, ...otc];
+
+      await Promise.all(
+        tickers.map((ticker) => this.tickerRepository.updateIndustry(ticker)),
+      );
+
+      Logger.log(`產業已更新`);
+    } catch (error) {
+      Logger.warn(`產業無法更新`);
+      console.error('Failed to fetch market stocks:', error);
+      throw new Error('Failed to fetch market stocks');
     }
   }
 }

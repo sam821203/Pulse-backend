@@ -26,4 +26,9 @@ export class TickerRepository {
   async findStockByName(name: string) {
     return this.model.find({ name });
   }
+
+  async updateIndustry(ticker: any) {
+    const { name, symbol } = ticker;
+    return this.model.updateOne({ name, symbol }, ticker, { upsert: true });
+  }
 }

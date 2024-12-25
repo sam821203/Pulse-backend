@@ -32,4 +32,10 @@ export class TickerController {
   ) {
     return await this.tickerService.findStockInfo(symbol, name);
   }
+
+  @Get('marketStocks')
+  @ApiOperation({ summary: '查詢個股產業別' })
+  async getStockMarket() {
+    return await this.tickerService.updateStockMarket();
+  }
 }

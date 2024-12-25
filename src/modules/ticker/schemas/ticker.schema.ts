@@ -104,6 +104,14 @@ export class Ticker {
   // 股利年度
   @Prop()
   dividendYear: number;
+
+  // 上市別
+  @Prop()
+  market: string;
+
+  // 產業別
+  @Prop()
+  industry: string;
 }
 
 export const TickerSchema = SchemaFactory.createForClass(Ticker).index(

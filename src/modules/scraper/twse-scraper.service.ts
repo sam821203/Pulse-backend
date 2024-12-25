@@ -16,7 +16,7 @@ export class TwseScraperService {
     private httpService: HttpService,
   ) {}
 
-  // API：取得上是公司股票清單
+  // API：取得上市公司股票清單
   async fetchListedStocks(options?: { market: 'TSE' | 'OTC' }) {
     const url =
       options?.market === 'OTC'
@@ -96,12 +96,4 @@ export class TwseScraperService {
 
     return data;
   }
-
-  // async onApplicationBootstrap() {
-  //   const tse = await this.fetchListedStocks({ market: 'TSE' });
-  //   // console.log(tse); // 顯示上市公司股票清單
-
-  //   const otc = await this.fetchListedStocks({ market: 'OTC' });
-  //   // console.log(otc); // 顯示上櫃公司股票清單
-  // }
 }
