@@ -39,6 +39,8 @@ export class StockStaticService {
         return await this.stockStaticRepository.findStockBySymbol(symbol);
       } else if (name) {
         return await this.stockStaticRepository.findStockByName(name);
+      } else {
+        return await this.stockStaticRepository.findAllStocks();
       }
     }
   }

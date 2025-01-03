@@ -20,10 +20,14 @@ export class StockStaticRepository {
   }
 
   async findStockBySymbol(symbol: string) {
-    return this.model.find({ symbol });
+    return this.model.findOne({ symbol });
   }
 
   async findStockByName(name: string) {
-    return this.model.find({ name });
+    return this.model.findOne({ name });
+  }
+
+  async findAllStocks(): Promise<StockStatic[]> {
+    return this.model.find();
   }
 }
