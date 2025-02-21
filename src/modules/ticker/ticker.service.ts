@@ -56,7 +56,7 @@ export class TickerService {
   async updateTpexEquitiesValues(date: string = DateTime.local().toISODate()) {
     const data = await this.tpexScraperService.fetchEquitiesValues(date);
     if (data) {
-      const tickers = data.map((ticker) => ({
+      const tickers = data.map((ticker: any) => ({
         date: ticker.date,
         type: TickerType.Index,
         symbol: ticker.symbol,
@@ -79,15 +79,25 @@ export class TickerService {
   }
 
   // 查詢 31 天前的該股資訊
-  async findStockInfo(symbol?: string, name?: string) {
+  async findStockInfo(date: string, symbol?: string, name?: string) {
     if (!symbol && !name) {
-      return new BadRequestException('須至少提供股票代號或股票名稱!');
-    } else {
-      if (symbol) {
-        return await this.tickerRepository.findFirstStockBySymbol(symbol);
-      } else if (name) {
-        return await this.tickerRepository.findStockByName(name);
-      }
+      throw new BadRequestException('須至少提供股票代號或股票名稱!');
+    }
+
+    const queryDate = date
+      ? DateTime.fromISO(date).minus({ days: 1 }).toISODate()
+      : null;
+
+    if (symbol) {
+      return await this.tickerRepository.findStockBySymbolAndDate(
+        symbol,
+        queryDate,
+      );
+    } else if (name) {
+      return await this.tickerRepository.findStockByNameAndDate(
+        name,
+        queryDate,
+      );
     }
   }
 

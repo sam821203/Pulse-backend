@@ -25,12 +25,19 @@ export class TickerController {
     description: '股票名稱',
     schema: { default: '台積電' },
   })
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    description: '查詢日期，格式為 YYYY-MM-DD',
+    schema: { default: '2025-01-10' },
+  })
   @ApiOperation({ summary: '查詢個股資訊' })
   async findStock(
-    @Query('symbol') symbol: string,
-    @Query('name') name: string,
+    @Query('date') date: string,
+    @Query('symbol') symbol?: string,
+    @Query('name') name?: string,
   ) {
-    return await this.tickerService.findStockInfo(symbol, name);
+    return await this.tickerService.findStockInfo(date, symbol, name);
   }
 
   // @Get()

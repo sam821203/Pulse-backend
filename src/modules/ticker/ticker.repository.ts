@@ -44,4 +44,12 @@ export class TickerRepository {
   async findFirstStockBySymbol(symbol: string) {
     return this.model.findOne({ symbol });
   }
+
+  async findStockBySymbolAndDate(symbol: string, date: string) {
+    return this.model.findOne({ symbol, date });
+  }
+
+  async findStockByNameAndDate(name: string, date: string) {
+    return this.model.find({ name, date });
+  }
 }
