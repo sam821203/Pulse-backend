@@ -19,7 +19,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TickerService } from './modules/ticker/ticker.service';
 import { StockStaticService } from './modules/stock-static/stock-static.service';
 import { OnApplicationBootstrap } from '@nestjs/common';
-import { DateTime } from 'luxon';
+import { StocksModule } from './modules/stocks/stocks.module';
+import { StocksController } from './modules/stocks/stocks.controller';
 
 @Module({
   imports: [
@@ -37,8 +38,9 @@ import { DateTime } from 'luxon';
     ScheduleModule.forRoot(),
     TickerModule,
     StockStaticModule,
+    StocksModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, StocksController],
   providers: [
     AppService,
     {

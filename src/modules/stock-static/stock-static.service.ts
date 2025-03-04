@@ -4,7 +4,7 @@ import { StockStaticRepository } from './stock-static.repository';
 import { Cron } from '@nestjs/schedule';
 import { IResponse } from 'src/interfaces/response.interface';
 import { EMPTY } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
+// import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class StockStaticService {
@@ -13,8 +13,8 @@ export class StockStaticService {
   constructor(
     private readonly twseScraperService: TwseScraperService,
     private readonly stockStaticRepository: StockStaticRepository,
-    private httpService: HttpService,
   ) {}
+  // private httpService: HttpService,
 
   // 每年 1 月 1 日的午夜（00:00）執行一次
   @Cron('0 0 0 1 1 *')
