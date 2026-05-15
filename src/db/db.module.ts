@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from '../modules/user/schemas/user.schema';
 import { DbService } from './db.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 const MONGO_MODELS = MongooseModule.forFeature([
   {
@@ -16,10 +16,10 @@ const MONGO_MODELS = MongooseModule.forFeature([
   imports: [
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('database.uri'),
-      }),
       inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.getOrThrow<string>('MONGODB_URI'),
+      }),
     }),
     MONGO_MODELS,
   ],

@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { Logger, Module, ValidationPipe } from '@nestjs/common';
 import { APP_PIPE } from '@nestjs/core';
 import { APP_GUARD } from '@nestjs/core';
@@ -8,13 +9,13 @@ import { AppController } from './app.controller';
 import { DbModule } from './db/db.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
 import configurationFactory from './config/configuration.factory';
 import jwtConfigFactory from './config/jwt.config';
 import { AbilitiesGuard } from 'src/auth/guards/permissions.guard';
 import { CaslAbilityModule } from './auth/casl/casl-ability.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { TickerModule } from './modules/ticker/ticker.module';
+import { ScraperModule } from './modules/scraper/scraper.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TickerService } from './modules/ticker/ticker.service';
 import { StockStaticService } from './modules/stock-static/stock-static.service';
@@ -24,6 +25,11 @@ import { StocksController } from './modules/stocks/stocks.controller';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    ScraperModule,
     // MarketStatsModule,
     DbModule,
     UserModule,
