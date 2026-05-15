@@ -35,5 +35,5 @@ async function bootstrap() {
 }
 
 bootstrap().then(() => {
-  logger.log(`Server is running on http://localhost:${listenPort}/swagger-ui`);
+  logger.log(`Server is running on http://0.0.0.0:${listenPort}/swagger-ui`);
 });
