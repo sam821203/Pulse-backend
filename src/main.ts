@@ -2,13 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
-import { Log4jsLogger } from '@nestx-log4js/core';
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
-const listenPort = 3000;
 const logger = new Logger('main.ts');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('port') || 3000;
+
+  // 使用全局驗證管道
+  app.useGlobalPipes(new ValidationPipe());
 
   // 配置 swagger
   const config = new DocumentBuilder()
@@ -27,13 +32,12 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger-ui', app, documentFactory());
 
-  app.useLogger(app.get(Log4jsLogger));
-
   // 允許跨域訪問
   app.enableCors();
-  await app.listen(process.env.PORT ?? listenPort);
+
+  // 啟動應用
+  await app.listen(port);
+  logger.log(`Server is running on http://localhost:${port}/swagger-ui`);
 }
 
-bootstrap().then(() => {
-  logger.log(`Server is running on http://0.0.0.0:${listenPort}/swagger-ui`);
-});
+bootstrap();

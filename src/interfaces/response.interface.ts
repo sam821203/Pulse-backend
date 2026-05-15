@@ -1,5 +1,5 @@
 export interface IResponse {
-  // 0 = success
   code: number;
-  msg: any;
+  data: object;
+  msg: string;
 }

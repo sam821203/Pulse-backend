@@ -5,11 +5,18 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { DateTime } from 'luxon';
 import * as numeral from 'numeral';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { TWSE_MODEL_TOKEN, TwseDocument } from './schemas/twse.schema';
 
 @Injectable()
 export class TwseScraperService {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    @InjectModel(TWSE_MODEL_TOKEN) private twseModel: Model<TwseDocument>,
+    private httpService: HttpService,
+  ) {}
 
+  // API：取得上是公司股票清單
   async fetchListedStocks(options?: { market: 'TSE' | 'OTC' }) {
     const url =
       options?.market === 'OTC'
@@ -42,7 +49,7 @@ export class TwseScraperService {
     return data;
   }
 
-  // 取得上市股票本益比、股價淨值比、殖利率
+  // API：取得上市股票本益比、股價淨值比、殖利率
   async fetchEquitiesValues(date: string) {
     // 將 `date` 轉換成 `yyyyMMdd` 格式
     const formattedDate = DateTime.fromISO(date).toFormat('yyyyMMdd');
@@ -72,12 +79,13 @@ export class TwseScraperService {
         dividendYear,
         peRatio,
         pbRatio,
-        // fiscalYearQuarter,
+        fiscalYearQuarter,
       ] = row;
       const ticker = {
         date,
         symbol,
         name,
+        fiscalYearQuarter, // 財報年/季
         peRatio: numeral(peRatio).value(), // 本益比
         pbRatio: numeral(pbRatio).value(), // 股價淨值比
         dividendYield: numeral(dividendYield).value(), // 殖利率
@@ -89,11 +97,11 @@ export class TwseScraperService {
     return data;
   }
 
-  async onApplicationBootstrap() {
-    const tse = await this.fetchListedStocks({ market: 'TSE' });
-    // console.log(tse); // 顯示上市公司股票清單
+  // async onApplicationBootstrap() {
+  //   const tse = await this.fetchListedStocks({ market: 'TSE' });
+  //   // console.log(tse); // 顯示上市公司股票清單
 
-    const otc = await this.fetchListedStocks({ market: 'OTC' });
-    // console.log(otc); // 顯示上櫃公司股票清單
-  }
+  //   const otc = await this.fetchListedStocks({ market: 'OTC' });
+  //   // console.log(otc); // 顯示上櫃公司股票清單
+  // }
 }

@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './schema/user.schema';
+import { UserSchema } from '../modules/user/schemas/user.schema';
+import { DbService } from './db.service';
 
 const MONGO_MODELS = MongooseModule.forFeature([
   {
@@ -23,5 +24,6 @@ const MONGO_MODELS = MongooseModule.forFeature([
     MONGO_MODELS,
   ],
   exports: [MONGO_MODELS],
+  providers: [DbService],
 })
 export class DbModule {}
