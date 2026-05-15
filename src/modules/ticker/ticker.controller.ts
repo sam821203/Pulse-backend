@@ -25,17 +25,31 @@ export class TickerController {
     description: '股票名稱',
     schema: { default: '台積電' },
   })
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    description: '查詢日期，格式為 YYYY-MM-DD',
+    schema: { default: '2025-01-10' },
+  })
   @ApiOperation({ summary: '查詢個股資訊' })
   async findStock(
-    @Query('symbol') symbol: string,
-    @Query('name') name: string,
+    @Query('date') date: string,
+    @Query('symbol') symbol?: string,
+    @Query('name') name?: string,
   ) {
-    return await this.tickerService.findStockInfo(symbol, name);
+    return await this.tickerService.findStockInfo(date, symbol, name);
   }
 
-  @Get('marketStocks')
-  @ApiOperation({ summary: '查詢個股產業別' })
-  async getStockMarket() {
-    return await this.tickerService.updateStockMarket();
-  }
+  // @Get()
+  // @ApiOperation({ summary: '查詢個股產業別' })
+  // async findIndustryAndMarket(@Query('symbol') symbol: string) {
+  //   return await this.tickerService.findFirstStock(symbol);
+  // }
+
+  // 查詢該個股 31 天的產業別
+  // @Get('marketStocks')
+  // @ApiOperation({ summary: '查詢個股產業別' })
+  // async getStockMarket() {
+  //   return await this.tickerService.updateStockMarket();
+  // }
 }

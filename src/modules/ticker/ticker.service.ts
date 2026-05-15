@@ -22,8 +22,8 @@ export class TickerService {
     await Promise.all([
       this.updateTwseEquitiesValues(date),
       this.updateTpexEquitiesValues(date),
-      this.updateStockMarket(),
-    ]).then(() => delay(2000));
+      // this.updateStockMarket()
+    ]).then(() => delay(1000));
   }
 
   @Cron('0 0 17 * * *')
@@ -56,7 +56,7 @@ export class TickerService {
   async updateTpexEquitiesValues(date: string = DateTime.local().toISODate()) {
     const data = await this.tpexScraperService.fetchEquitiesValues(date);
     if (data) {
-      const tickers = data.map((ticker) => ({
+      const tickers = data.map((ticker: any) => ({
         date: ticker.date,
         type: TickerType.Index,
         symbol: ticker.symbol,
@@ -78,38 +78,55 @@ export class TickerService {
     }
   }
 
-  async findStockInfo(symbol?: string, name?: string) {
+  // 查詢 31 天前的該股資訊
+  async findStockInfo(date: string, symbol?: string, name?: string) {
     if (!symbol && !name) {
-      return new BadRequestException('須至少提供股票代號或股票名稱!');
-    } else {
-      if (symbol) {
-        return await this.tickerRepository.findStockBySymbol(symbol);
-      } else if (name) {
-        return await this.tickerRepository.findStockByName(name);
-      }
+      throw new BadRequestException('須至少提供股票代號或股票名稱!');
+    }
+
+    const queryDate = date
+      ? DateTime.fromISO(date).minus({ days: 1 }).toISODate()
+      : null;
+
+    if (symbol) {
+      return await this.tickerRepository.findStockBySymbolAndDate(
+        symbol,
+        queryDate,
+      );
+    } else if (name) {
+      return await this.tickerRepository.findStockByNameAndDate(
+        name,
+        queryDate,
+      );
     }
   }
 
   // 每年 1 月 1 日的午夜（00:00）執行一次
-  @Cron('0 0 0 1 1 *')
-  async updateStockMarket() {
-    try {
-      const [tse, otc] = await Promise.all([
-        this.twseScraperService.fetchListedStocks({ market: 'TSE' }),
-        this.twseScraperService.fetchListedStocks({ market: 'OTC' }),
-      ]);
+  // @Cron('0 0 0 1 1 *')
+  // async updateStockMarket() {
+  //   try {
+  //     const [tse, otc] = await Promise.all([
+  //       this.twseScraperService.fetchListedStocks({ market: 'TSE' }),
+  //       this.twseScraperService.fetchListedStocks({ market: 'OTC' }),
+  //     ]);
 
-      const tickers = [...tse, ...otc];
+  //     const tickers = [...tse, ...otc];
 
-      await Promise.all(
-        tickers.map((ticker) => this.tickerRepository.updateIndustry(ticker)),
-      );
+  //     // await Promise.all(
+  //     //   tickers.map((ticker) =>
+  //     //     this.tickerRepository.updateIndustryAndMarket(ticker),
+  //     //   ),
+  //     // );
 
-      Logger.log(`產業已更新`);
-    } catch (error) {
-      Logger.warn(`產業無法更新`);
-      console.error('Failed to fetch market stocks:', error);
-      throw new Error('Failed to fetch market stocks');
-    }
-  }
+  //     Logger.log(`產業已更新`);
+  //   } catch (error) {
+  //     Logger.warn(`產業無法更新`);
+  //     console.error('Failed to fetch market stocks:', error);
+  //     throw new Error('Failed to fetch market stocks');
+  //   }
+  // }
+
+  // async findFirstStock(symbol: string) {
+  //   return await this.tickerRepository.findFirstStockBySymbol(symbol);
+  // }
 }
