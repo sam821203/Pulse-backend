@@ -31,4 +31,25 @@ export class TickerRepository {
     const { name, symbol } = ticker;
     return this.model.updateOne({ name, symbol }, ticker, { upsert: true });
   }
+
+  // async updateIndustryAndMarket(ticker: Partial<Ticker>) {
+  //   const { name, symbol, industry, market } = ticker;
+  //   return this.model.updateMany(
+  //     { $or: [{ name }, { symbol }] },
+  //     { $set: { industry, market } },
+  //     { upsert: true },
+  //   );
+  // }
+
+  async findFirstStockBySymbol(symbol: string) {
+    return this.model.findOne({ symbol });
+  }
+
+  async findStockBySymbolAndDate(symbol: string, date: string) {
+    return this.model.findOne({ symbol, date });
+  }
+
+  async findStockByNameAndDate(name: string, date: string) {
+    return this.model.find({ name, date });
+  }
 }
